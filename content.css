@@ -1,0 +1,164 @@
+/* SnapLoad v2.1 – Overlay */
+
+#snapload-overlay {
+  position: absolute;
+  z-index: 2147483647;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s cubic-bezier(0.16,1,0.3,1);
+  font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+}
+#snapload-overlay.sl-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Glass Card ─────────────────────────────────────────────────────────── */
+.sl-glass {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 14px;
+  min-width: 230px;
+  max-width: 320px;
+  background: rgba(12, 8, 32, 0.78);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.13);
+  box-shadow:
+    0 12px 40px rgba(0,0,0,0.38),
+    0 3px 10px rgba(0,0,0,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  transform: translateY(6px) scale(0.96);
+  transition: transform 0.2s cubic-bezier(0.16,1,0.3,1);
+  will-change: transform;
+}
+#snapload-overlay.sl-visible .sl-glass {
+  transform: translateY(0) scale(1);
+}
+/* shimmer */
+.sl-glass::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 14px; right: 14px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  pointer-events: none;
+}
+
+/* ── Thumbnail preview ───────────────────────────────────────────────────── */
+.sl-thumb {
+  width: 40px; height: 40px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+}
+.sl-thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+
+/* ── Info ────────────────────────────────────────────────────────────────── */
+.sl-info { flex: 1; min-width: 0; }
+.sl-type {
+  font-size: 9px; font-weight: 800;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: rgba(255,255,255,0.38); line-height: 1; margin-bottom: 3px;
+}
+.sl-name {
+  font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 130px; line-height: 1.2;
+}
+.sl-hint { font-size: 9.5px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
+/* ── Divider ─────────────────────────────────────────────────────────────── */
+.sl-sep { width: 1px; height: 32px; background: rgba(255,255,255,0.1); flex-shrink: 0; }
+
+/* ── Action buttons ──────────────────────────────────────────────────────── */
+.sl-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+
+.sl-btn {
+  width: 50px; height: 50px;
+  border-radius: 11px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.07);
+  cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px;
+  padding: 0; outline: none;
+  transition: transform 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
+  position: relative; overflow: hidden;
+}
+.sl-btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+.sl-btn:hover { transform: scale(1.06); }
+.sl-btn:active { transform: scale(0.94); }
+.sl-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+.sl-btn-lbl {
+  font-size: 8px; font-weight: 800;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  color: rgba(255,255,255,0.5); line-height: 1;
+}
+
+/* Thumb = indigo */
+.sl-btn-thumb {
+  background: rgba(79,70,229,0.4);
+  border-color: rgba(99,90,255,0.45);
+  box-shadow: 0 2px 10px rgba(79,70,229,0.3);
+}
+.sl-btn-thumb:hover { background: rgba(79,70,229,0.65); box-shadow: 0 4px 18px rgba(79,70,229,0.45); }
+.sl-btn-thumb svg { stroke: #c4c0ff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sl-btn-thumb .sl-btn-lbl { color: #a5b4fc; }
+
+/* Video = red */
+.sl-btn-video {
+  background: rgba(239,68,68,0.35);
+  border-color: rgba(239,68,68,0.42);
+  box-shadow: 0 2px 10px rgba(239,68,68,0.22);
+}
+.sl-btn-video:hover { background: rgba(239,68,68,0.58); box-shadow: 0 4px 18px rgba(239,68,68,0.38); }
+.sl-btn-video svg { stroke: #fca5a5; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sl-btn-video .sl-btn-lbl { color: #fca5a5; }
+
+/* Image-only = green */
+.sl-btn-img {
+  background: rgba(16,185,129,0.35);
+  border-color: rgba(16,185,129,0.42);
+  box-shadow: 0 2px 10px rgba(16,185,129,0.2);
+}
+.sl-btn-img:hover { background: rgba(16,185,129,0.55); box-shadow: 0 4px 18px rgba(16,185,129,0.35); }
+.sl-btn-img svg { stroke: #6ee7b7; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sl-btn-img .sl-btn-lbl { color: #6ee7b7; }
+
+/* States */
+.sl-btn.sl-loading svg { animation: sl-spin 0.7s linear infinite; }
+.sl-btn.sl-done { background: rgba(16,185,129,0.6) !important; border-color: rgba(16,185,129,0.65) !important; box-shadow: 0 4px 16px rgba(16,185,129,0.4) !important; }
+.sl-btn.sl-done svg { stroke: white !important; }
+.sl-btn.sl-done .sl-btn-lbl { color: rgba(255,255,255,0.85) !important; }
+.sl-btn.sl-err { background: rgba(239,68,68,0.55) !important; border-color: rgba(239,68,68,0.65) !important; }
+.sl-btn.sl-err svg { stroke: white !important; }
+.sl-btn.sl-err .sl-btn-lbl { color: rgba(255,255,255,0.75) !important; }
+
+/* Disabled */
+.sl-btn[disabled] { opacity: 0.38; cursor: not-allowed; pointer-events: none; }
+
+/* Restricted badge */
+.sl-badge {
+  position: absolute; top: -2px; right: -2px;
+  width: 13px; height: 13px;
+  background: #f59e0b; border-radius: 50%;
+  border: 1.5px solid rgba(12,8,32,0.85);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7.5px; font-weight: 900; color: white; line-height: 1;
+}
+
+@keyframes sl-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

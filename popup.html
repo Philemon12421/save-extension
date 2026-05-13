@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SnapLoad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --w:#fff;--off:#f6f6fb;--bdr:#eaeaf2;--txt:#0e0e1a;--mute:#6e6e90;
+  --accent:#4f46e5;--al:rgba(79,70,229,.1);--ag:rgba(79,70,229,.13);
+  --green:#10b981;--gl:rgba(16,185,129,.1);
+  --red:#ef4444;--amber:#f59e0b;--aml:rgba(245,158,11,.1);
+  --s1:0 1px 3px rgba(0,0,0,.05),0 1px 2px rgba(0,0,0,.04);
+}
+body{width:330px;background:var(--w);font-family:'DM Sans',sans-serif;color:var(--txt);overflow-x:hidden}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;gap:11px;padding:16px 16px 13px;border-bottom:1px solid var(--bdr)}
+.logo{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px var(--ag);flex-shrink:0}
+.logo svg{width:19px;height:19px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brand-name{font-family:'Syne',sans-serif;font-weight:800;font-size:15.5px;letter-spacing:-.3px;line-height:1}
+.brand-sub{font-size:10.5px;color:var(--mute);margin-top:2px}
+.vbadge{margin-left:auto;background:var(--al);color:var(--accent);font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.3px;flex-shrink:0}
+
+/* SECTIONS */
+.sec{padding:13px 14px 0}
+.sec:last-child{padding-bottom:13px}
+.sec-head{font-size:9.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#9090b0;margin-bottom:8px;padding:0 1px}
+
+/* CURRENT SITE CARD */
+.site-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--bdr);background:var(--w);transition:border-color .15s,box-shadow .15s}
+.site-card.active{border-color:rgba(79,70,229,.3);box-shadow:0 0 0 3px var(--ag)}
+.site-favicon{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;background:var(--off);border:1px solid var(--bdr)}
+.site-domain{font-size:12.5px;font-weight:600;color:var(--txt);line-height:1.2}
+.site-status{font-size:10.5px;color:var(--mute);margin-top:2px}
+.site-status.on{color:var(--green)}
+.site-status.off{color:var(--red)}
+
+/* MASTER CARD */
+.master-card{display:flex;align-items:center;gap:11px;padding:12px 13px;border-radius:13px;border:1px solid var(--bdr);background:var(--off);transition:border-color .2s,box-shadow .2s,background .2s}
+.master-card.on{border-color:rgba(79,70,229,.3);box-shadow:0 0 0 3px var(--ag);background:var(--w)}
+.master-ico{width:36px;height:36px;border-radius:9px;background:var(--al);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+.master-card.off .master-ico{background:#f0f0f6}
+.master-ico svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.master-card.off .master-ico svg{stroke:#b0b0c8}
+.master-lbl{font-size:13px;font-weight:600}
+.master-desc{font-size:10.5px;color:var(--mute);margin-top:2px}
+
+/* LIVE ROW */
+.live-row{display:flex;align-items:center;gap:6px;margin-top:7px;padding:0 2px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#d0d0e0;transition:background .3s}
+.live-dot.on{background:var(--green);box-shadow:0 0 0 3px var(--gl);animation:pulse 2s infinite}
+.live-dot.warn{background:var(--amber);box-shadow:0 0 0 3px var(--aml)}
+.live-lbl{font-size:11px;font-weight:500;color:#9090b0;transition:color .3s}
+.live-lbl.on{color:var(--green)}.live-lbl.warn{color:var(--amber)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px var(--gl)}50%{box-shadow:0 0 0 6px rgba(16,185,129,.07)}}
+
+/* SWITCH */
+.sw{position:relative;width:42px;height:23px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0}
+.sl{position:absolute;cursor:pointer;inset:0;background:#dddde8;border-radius:23px;transition:background .22s}
+.sl::before{content:'';position:absolute;height:17px;width:17px;left:3px;bottom:3px;background:white;border-radius:50%;transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+input:checked+.sl{background:var(--accent)}
+input:checked+.sl::before{transform:translateX(19px);box-shadow:0 2px 8px rgba(79,70,229,.4)}
+/* small */
+.sw-sm{width:34px;height:19px}
+.sw-sm .sl::before{height:13px;width:13px}
+.sw-sm input:checked+.sl::before{transform:translateX(15px)}
+
+/* SITE LIST */
+.site-list{display:flex;flex-direction:column;gap:5px}
+.site-row{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:9px;background:var(--off);border:1px solid var(--bdr);transition:border-color .15s,background .15s}
+.site-row.here{border-color:rgba(79,70,229,.28);background:#f4f3ff}
+.site-row.enabled{background:var(--w)}
+.s-dot{width:7px;height:7px;border-radius:50%;background:#d8d8e8;flex-shrink:0;transition:background .2s}
+.s-dot.on{background:var(--green)}.s-dot.here-dot{background:var(--accent);box-shadow:0 0 0 3px var(--ag)}
+.s-emoji{font-size:15px;flex-shrink:0;line-height:1;width:20px;text-align:center}
+.s-name{font-size:12px;font-weight:600}.s-domain{font-size:10px;color:var(--mute);margin-top:1px}
+.here-tag{margin-left:auto;margin-right:4px;font-size:8.5px;font-weight:800;letter-spacing:.3px;background:var(--accent);color:white;padding:2px 7px;border-radius:20px;flex-shrink:0}
+
+/* NOTICE */
+.notice{display:flex;align-items:flex-start;gap:8px;padding:9px 11px;border-radius:10px;font-size:11px;line-height:1.45;border:1px solid}
+.notice.warn{background:#fffbeb;border-color:#fde68a;color:#78350f}
+.notice.info{background:var(--al);border-color:rgba(79,70,229,.22);color:#312e81}
+.notice-ico{font-size:13px;flex-shrink:0;margin-top:1px}
+.notice strong{font-weight:600;display:block;margin-bottom:2px}
+
+/* ADD SITE */
+.add-card{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:10px;border:1.5px dashed var(--bdr);background:var(--w);cursor:pointer;text-decoration:none;transition:border-color .15s,background .15s}
+.add-card:hover{border-color:var(--accent);background:var(--al)}
+.add-ico{width:28px;height:28px;border-radius:8px;background:var(--al);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.add-ico svg{width:13px;height:13px;stroke:var(--accent);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.add-title{font-size:12px;font-weight:600;color:var(--accent)}
+.add-sub{font-size:10px;color:var(--mute);margin-top:1px}
+.add-arr{color:var(--accent);font-size:16px;margin-left:auto}
+
+/* DIVIDER */
+.div{height:1px;background:var(--bdr);margin:0}
+
+/* FOOTER */
+.foot{display:flex;align-items:center;justify-content:space-between;padding:10px 15px;border-top:1px solid var(--bdr)}
+.foot-txt{font-size:10px;color:#c0c0d0}.foot-txt strong{color:#9090a8}
+.kbd{font-size:9.5px;background:var(--off);border:1px solid var(--bdr);color:var(--mute);padding:2px 7px;border-radius:5px;font-weight:600}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="logo">
+    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  </div>
+  <div>
+    <div class="brand-name">SnapLoad</div>
+    <div class="brand-sub">Media Downloader</div>
+  </div>
+  <div class="vbadge">v2.1</div>
+</div>
+
+<!-- CURRENT SITE -->
+<div class="sec">
+  <div class="sec-head">Current Site</div>
+  <div class="site-card" id="siteCard">
+    <div class="site-favicon" id="siteFav">🌐</div>
+    <div style="flex:1;min-width:0">
+      <div class="site-domain" id="siteDomain">Loading…</div>
+      <div class="site-status" id="siteStat">Checking…</div>
+    </div>
+    <label class="sw sw-sm">
+      <input type="checkbox" id="siteToggle">
+      <span class="sl"></span>
+    </label>
+  </div>
+</div>
+
+<!-- NOTICE -->
+<div class="sec hidden" id="noticeWrap">
+  <div class="notice warn" id="noticeBox">
+    <span class="notice-ico">⚠️</span>
+    <div><strong id="noticeTitle"></strong><span id="noticeBody"></span></div>
+  </div>
+</div>
+
+<!-- MASTER -->
+<div class="sec">
+  <div class="sec-head">Extension</div>
+  <div class="master-card on" id="masterCard">
+    <div class="master-ico" id="masterIco">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
+    </div>
+    <div style="flex:1">
+      <div class="master-lbl" id="masterLbl">SnapLoad Active</div>
+      <div class="master-desc" id="masterDesc">Hover any media to download</div>
+    </div>
+    <label class="sw"><input type="checkbox" id="masterToggle" checked><span class="sl"></span></label>
+  </div>
+  <div class="live-row">
+    <div class="live-dot on" id="liveDot"></div>
+    <div class="live-lbl on" id="liveLbl">Running on this page</div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- SITE ACCESS -->
+<div class="sec">
+  <div class="sec-head">Site Access</div>
+  <div class="site-list">
+
+    <div class="site-row" data-key="youtube.com">
+      <div class="s-dot" id="d-youtube"></div>
+      <div class="s-emoji">▶️</div>
+      <div><div class="s-name">YouTube</div><div class="s-domain">youtube.com</div></div>
+      <label class="sw sw-sm" style="margin-left:auto">
+        <input type="checkbox" class="sc" data-key="youtube.com"><span class="sl"></span>
+      </label>
+    </div>
+
+    <div class="site-row" data-key="instagram.com">
+      <div class="s-dot" id="d-instagram"></div>
+      <div class="s-emoji">📸</div>
+      <div><div class="s-name">Instagram</div><div class="s-domain">instagram.com</div></div>
+      <label class="sw sw-sm" style="margin-left:auto">
+        <input type="checkbox" class="sc" data-key="instagram.com"><span class="sl"></span>
+      </label>
+    </div>
+
+    <div class="site-row" data-key="tiktok.com">
+      <div class="s-dot" id="d-tiktok"></div>
+      <div class="s-emoji">🎵</div>
+      <div><div class="s-name">TikTok</div><div class="s-domain">tiktok.com</div></div>
+      <label class="sw sw-sm" style="margin-left:auto">
+        <input type="checkbox" class="sc" data-key="tiktok.com"><span class="sl"></span>
+      </label>
+    </div>
+
+    <div class="site-row" data-key="snapchat.com">
+      <div class="s-dot" id="d-snapchat"></div>
+      <div class="s-emoji">👻</div>
+      <div><div class="s-name">Snapchat</div><div class="s-domain">snapchat.com</div></div>
+      <label class="sw sw-sm" style="margin-left:auto">
+        <input type="checkbox" class="sc" data-key="snapchat.com"><span class="sl"></span>
+      </label>
+    </div>
+
+    <div class="site-row" data-key="facebook.com">
+      <div class="s-dot" id="d-facebook"></div>
+      <div class="s-emoji">👍</div>
+      <div><div class="s-name">Facebook</div><div class="s-domain">facebook.com</div></div>
+      <label class="sw sw-sm" style="margin-left:auto">
+        <input type="checkbox" class="sc" data-key="facebook.com"><span class="sl"></span>
+      </label>
+    </div>
+
+    <div class="site-row" data-key="x.com">
+      <div class="s-dot" id="d-x"></div>
+      <div class="s-emoji" style="font-size:13px;font-weight:800">𝕏</div>
+      <div><div class="s-name">X / Twitter</div><div class="s-domain">x.com · twitter.com</div></div>
+      <label class="sw sw-sm" style="margin-left:auto">
+        <input type="checkbox" class="sc" data-key="x.com"><span class="sl"></span>
+      </label>
+    </div>
+
+    <div class="site-row" data-key="google.com">
+      <div class="s-dot" id="d-google"></div>
+      <div class="s-emoji">🔍</div>
+      <div><div class="s-name">Google Images</div><div class="s-domain">google.com</div></div>
+      <label class="sw sw-sm" style="margin-left:auto">
+        <input type="checkbox" class="sc" data-key="google.com"><span class="sl"></span>
+      </label>
+    </div>
+
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- ADD CUSTOM SITE -->
+<div class="sec" id="addSiteSec">
+  <div class="sec-head">Other Sites</div>
+  <a class="add-card" id="addBtn" href="#">
+    <div class="add-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+    <div>
+      <div class="add-title" id="addTitle">Enable on current site</div>
+      <div class="add-sub"  id="addSub">Grant SnapLoad access here</div>
+    </div>
+    <div class="add-arr">›</div>
+  </a>
+</div>
+
+<!-- FOOTER -->
+<div class="foot">
+  <div class="foot-txt">Made with ❤️ by <strong>SnapLoad</strong></div>
+  <div class="kbd">Hover → Download</div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
