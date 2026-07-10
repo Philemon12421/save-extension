@@ -4,7 +4,7 @@ Hover any image or video on any site to get a **glassy overlay** with two smart 
 
 ---
 
-## ✦ What's New in v2
+## ✦ What's New in v1
 
 - 🖼 **Two download buttons** on video hover: *Thumbnail* (poster/frame) + *Video* (full file)
 - 🌐 **Per-site access controls** — toggle YouTube, Instagram, TikTok, Snapchat, Facebook, X, Google individually
