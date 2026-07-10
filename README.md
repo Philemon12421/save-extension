@@ -1,4 +1,4 @@
-# SnapLoad v2 – Media Downloader Chrome Extension
+# SnapLoad – Media Downloader Chrome Extension
 
 Hover any image or video on any site to get a **glassy overlay** with two smart download options: **thumbnail** or **full video**. Per-site access toggles built in.
 
