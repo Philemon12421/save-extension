@@ -84,5 +84,5 @@ snapload-extension/
 
 ---
 
-Made with ♥ by SnapLoad
+Made with ♥ by Philemon
 # save-extension
