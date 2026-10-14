@@ -17,22 +17,38 @@
   let enabled = true, siteEnabled = true;
   let overlay = null, currentMedia = null;
   let hideTimer = null, hoveringOverlay = false;
+  let theme = 'dark', hideDelay = 360;
 
   // ── Boot ───────────────────────────────────────────────────────────────────
-  chrome.storage.sync.get(['enabled','sites','customSites'], init);
+  chrome.storage.sync.get(['enabled','sites','customSites','theme','hideDelay'], init);
 
   chrome.runtime.onMessage.addListener(msg => {
     if (msg.action === 'stateUpdate') {
       enabled = msg.enabled; siteEnabled = msg.siteEnabled;
       if (enabled && siteEnabled) { if (!overlay) setup(); }
       else teardown();
+    } else if (msg.action === 'settingsUpdate') {
+      if (msg.theme) theme = msg.theme;
+      if (msg.hideDelay) hideDelay = msg.hideDelay;
+      applyTheme();
     }
   });
 
   function init(s) {
     enabled = s.enabled !== false;
     siteEnabled = resolveSite(s);
+    if (s.theme) theme = s.theme;
+    if (s.hideDelay) hideDelay = s.hideDelay;
     if (enabled && siteEnabled) setup();
+  }
+
+  function applyTheme() {
+    if (!overlay) return;
+    if (theme === 'light') {
+      overlay.classList.add('sl-theme-light');
+    } else {
+      overlay.classList.remove('sl-theme-light');
+    }
   }
 
   function resolveSite(s) {
@@ -56,6 +72,7 @@
   // ── DOM setup ─────────────────────────────────────────────────────────────
   function setup() {
     if (!overlay) buildOverlay();
+    applyTheme();
     document.addEventListener('mouseover', onOver, true);
     document.addEventListener('mouseout',  onOut,  true);
     document.addEventListener('scroll',    onScroll, { passive: true, capture: true });
@@ -112,7 +129,7 @@
   }
 
   function clearTimer() { clearTimeout(hideTimer); }
-  function queueHide(ms = 360) {
+  function queueHide(ms = hideDelay) {
     clearTimer();
     hideTimer = setTimeout(() => { if (!hoveringOverlay) hide(); }, ms);
   }
@@ -139,9 +156,18 @@
       return mk('video', 'VIDEO', vsrc || thumbSrc, thumbSrc, vsrc, vid);
     }
 
-    // SOURCE inside video
+    // AUDIO or child of AUDIO
+    const aud = el.tagName === 'AUDIO' ? el : el.closest?.('audio');
+    if (aud) {
+      const asrc = aud.currentSrc || aud.src || aud.querySelector('source')?.src || null;
+      return mk('audio', 'AUDIO', asrc, null, asrc, aud);
+    }
+
+    // SOURCE inside video or audio
     if (el.tagName === 'SOURCE' && el.closest?.('video'))
       return detect(el.closest('video'));
+    if (el.tagName === 'SOURCE' && el.closest?.('audio'))
+      return detect(el.closest('audio'));
 
     // YouTube thumbnail detection (img with ytimg.com src, or anchor with watch?v=)
     const ytThumb = detectYT(el);
@@ -281,6 +307,21 @@
       btn.addEventListener('click', ev => { ev.stopPropagation(); doSvg(m, btn); });
       actions.appendChild(btn);
       hintEl.textContent = 'Download SVG';
+
+    } else if (m.type === 'audio') {
+      const btn = mkBtn('sl-btn-audio', svgAudio(), 'AUDIO', false);
+
+      const streaming = !m.videoSrc || isStreaming(m.videoSrc);
+      if (streaming) {
+        const badge = document.createElement('div');
+        badge.className = 'sl-badge'; badge.textContent = '!';
+        btn.appendChild(badge);
+        btn.title = 'Streaming audio — will open in new tab';
+      }
+
+      btn.addEventListener('click', ev => { ev.stopPropagation(); doVideo(m, btn); }); // reuse doVideo logic for audio
+      actions.appendChild(btn);
+      hintEl.textContent = streaming ? 'Streaming audio ↗' : 'Download audio file';
 
     } else {
       // Plain image
@@ -473,13 +514,13 @@
     try {
       const p = new URL(url, location.href).pathname;
       const e = p.split('.').pop().split('?')[0].toLowerCase();
-      if (['jpg','jpeg','png','gif','webp','avif','mp4','webm','ogg','mov','avi','svg'].includes(e)) return e;
+      if (['jpg','jpeg','png','gif','webp','avif','mp4','webm','ogg','mov','avi','svg','mp3','wav','flac','m4a','aac'].includes(e)) return e;
     } catch(_) {}
     return null;
   }
 
   function fname(url, type) {
-    if (!url) return { image:'image.jpg', video:'video.mp4', canvas:'canvas.png', svg:'file.svg' }[type] || 'file';
+    if (!url) return { image:'image.jpg', video:'video.mp4', audio:'audio.mp3', canvas:'canvas.png', svg:'file.svg' }[type] || 'file';
     try {
       const p = new URL(url, location.href).pathname;
       const n = decodeURIComponent(p.split('/').pop().split('?')[0]);
@@ -508,13 +549,14 @@
   // ── SVG icons ──────────────────────────────────────────────────────────────
   function svgImg()   { return `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`; }
   function svgVideo() { return `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`; }
+  function svgAudio() { return `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`; }
   function svgSpin()  { return `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:sl-spin .7s linear infinite"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg>`; }
   function svgCheck() { return `<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`; }
   function svgX()     { return `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`; }
 
   function typeIconHTML(type) {
-    const colors = { video:'#fca5a5', image:'#c4c0ff', canvas:'#fcd34d', svg:'#a78bfa' };
-    const icons  = { video: svgVideo(), image: svgImg(), canvas: svgImg(), svg: svgImg() };
+    const colors = { video:'#fca5a5', image:'#c4c0ff', canvas:'#fcd34d', svg:'#a78bfa', audio:'#60a5fa' };
+    const icons  = { video: svgVideo(), image: svgImg(), canvas: svgImg(), svg: svgImg(), audio: svgAudio() };
     const c = colors[type] || colors.image;
     const i = icons[type]  || icons.image;
     const colored = i.replace('stroke-width', `stroke="${c}" stroke-width`);

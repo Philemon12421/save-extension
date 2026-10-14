@@ -236,4 +236,13 @@ document.getElementById('addBtn').addEventListener('click', e => {
   save(); renderAll();
 });
 
+document.getElementById('settingsBtn')?.addEventListener('click', e => {
+  e.preventDefault();
+  if (chrome.runtime.openOptionsPage) {
+    chrome.runtime.openOptionsPage();
+  } else {
+    window.open(chrome.runtime.getURL('options.html'));
+  }
+});
+
 load();

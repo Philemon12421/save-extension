@@ -32,6 +32,11 @@
   "background": {
     "service_worker": "background.js"
   },
+  "options_page": "options.html",
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "web_accessible_resources": [
     {
       "resources": ["icons/*.png"],

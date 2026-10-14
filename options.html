@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnapLoad Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --text-muted: #6b7280;
+      --accent: #4f46e5;
+      --accent-hover: #4338ca;
+      --border: #e5e7eb;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 600px;
+      padding: 32px;
+      margin: 20px;
+    }
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo {
+      width: 48px;
+      height: 48px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    .logo svg {
+      width: 24px;
+      height: 24px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 24px;
+      margin: 0;
+    }
+    p.subtitle {
+      color: var(--text-muted);
+      margin: 4px 0 0;
+      font-size: 14px;
+    }
+    .section {
+      margin-bottom: 32px;
+    }
+    .section h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: #fcfcfd;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .setting-info {
+      flex: 1;
+    }
+    .setting-label {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .setting-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .setting-control {
+      margin-left: 16px;
+    }
+    select, button {
+      font-family: inherit;
+    }
+    select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    select:focus {
+      border-color: var(--accent);
+    }
+    button.save-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    button.save-btn:hover {
+      background: var(--accent-hover);
+    }
+    #status {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 14px;
+      color: #10b981;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <div>
+        <h1>SnapLoad Settings</h1>
+        <p class="subtitle">Customize your media downloading experience</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>General Preferences</h2>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <span class="setting-label">Overlay Theme</span>
+          <span class="setting-desc">Choose the appearance of the hover overlay</span>
+        </div>
+        <div class="setting-control">
+          <select id="themeSelect">
+            <option value="dark">Glassy Dark (Default)</option>
+            <option value="light">Glassy Light</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <span class="setting-label">Hover Delay</span>
+          <span class="setting-desc">How quickly the overlay hides when your mouse leaves</span>
+        </div>
+        <div class="setting-control">
+          <select id="delaySelect">
+            <option value="150">Fast (150ms)</option>
+            <option value="360">Normal (360ms)</option>
+            <option value="800">Slow (800ms)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button id="saveBtn" class="save-btn">Save Settings</button>
+    <div id="status"></div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
